@@ -1,22 +1,40 @@
 import { Link } from 'react-router-dom';
 import { useTrips } from '@/hooks/useTrips';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
-import { Plus, Calendar, MapPin } from 'lucide-react';
+import { Plus, Calendar, MapPin, LogOut } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function Dashboard() {
     const { trips } = useTrips();
+    const { user, logout } = useAuth();
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } catch (error) {
+            console.error("Logout failed", error);
+        }
+    };
 
     return (
         <div className="container mx-auto p-4 max-w-5xl">
             <header className="flex justify-between items-center mb-8 mt-8">
-                <h1 className="text-3xl font-bold tracking-tight">My Trips</h1>
-                <Link to="/create">
-                    <Button>
-                        <Plus className="mr-2 h-4 w-4" /> New Trip
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">My Trips</h1>
+                    {user && <p className="text-sm text-muted-foreground mt-1">{user.email}</p>}
+                </div>
+                <div className="flex gap-2">
+                    <Link to="/create">
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" /> New Trip
+                        </Button>
+                    </Link>
+                    <Button variant="outline" onClick={handleLogout}>
+                        <LogOut className="mr-2 h-4 w-4" /> Logout
                     </Button>
-                </Link>
+                </div>
             </header>
 
             {trips.length === 0 ? (
